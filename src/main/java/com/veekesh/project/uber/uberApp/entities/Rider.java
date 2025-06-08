@@ -13,7 +13,15 @@ public class Rider {
     @JoinColumn(name = "user_id")
     private User user;
 
-    private  Double rating;
+    private Double rating;
+
+    public Rider() {
+    }
+
+    public Rider(User user, Double rating) {
+        this.user = user;
+        this.rating = rating;
+    }
 
     public Long getId() {
         return id;

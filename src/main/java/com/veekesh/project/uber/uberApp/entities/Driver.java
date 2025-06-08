@@ -1,9 +1,13 @@
 package com.veekesh.project.uber.uberApp.entities;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.locationtech.jts.geom.Point;
 
 @Entity
+@Getter
+@Setter
 public class Driver {
 
     @Id
@@ -21,43 +25,6 @@ public class Driver {
     @Column(columnDefinition = "Geometry(Point, 4326)")
     Point currentLocation;
 
-    public Long getId() {
-        return id;
-    }
+    private String vehicleId;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Double getRating() {
-        return rating;
-    }
-
-    public void setRating(Double rating) {
-        this.rating = rating;
-    }
-
-    public Boolean getAvailable() {
-        return available;
-    }
-
-    public void setAvailable(Boolean available) {
-        this.available = available;
-    }
-
-    public Point getCurrentLocation() {
-        return currentLocation;
-    }
-
-    public void setCurrentLocation(Point currentLocation) {
-        this.currentLocation = currentLocation;
-    }
 }

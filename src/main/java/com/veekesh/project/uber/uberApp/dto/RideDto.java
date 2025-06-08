@@ -23,6 +23,7 @@ public class RideDto {
     private LocalDateTime createdTime;
     private RiderDto rider;
     private DriverDto driver;
+    private String otp;
     private PaymentMethod paymentMethod;
     private RideStatus rideStatus;
     private Double fare;

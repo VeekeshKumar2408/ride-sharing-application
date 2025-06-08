@@ -33,4 +33,69 @@ public class RideRequest {
     @Enumerated(EnumType.STRING)
     private RideRequestStatus rideRequestStatus;
 
+    private Double fare;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Point getPickupLocation() {
+        return pickupLocation;
+    }
+
+    public void setPickupLocation(Point pickupLocation) {
+        this.pickupLocation = pickupLocation;
+    }
+
+    public Point getDropOffLocation() {
+        return dropOffLocation;
+    }
+
+    public void setDropOffLocation(Point dropOffLocation) {
+        this.dropOffLocation = dropOffLocation;
+    }
+
+    public LocalDateTime getRequestedTime() {
+        return requestedTime;
+    }
+
+    public void setRequestedTime(LocalDateTime requestedTime) {
+        this.requestedTime = requestedTime;
+    }
+
+    public Rider getRider() {
+        return rider;
+    }
+
+    public void setRider(Rider rider) {
+        this.rider = rider;
+    }
+
+    public PaymentMethod getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(PaymentMethod paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+
+    public RideRequestStatus getRideRequestStatus() {
+        return rideRequestStatus;
+    }
+
+    public void setRideRequestStatus(RideRequestStatus rideRequestStatus) {
+        this.rideRequestStatus = rideRequestStatus;
+    }
+
+    public Double getFare() {
+        return fare;
+    }
+
+    public void setFare(Double fare) {
+        this.fare = fare;
+    }
 }
