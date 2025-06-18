@@ -24,7 +24,7 @@ A Spring Boot-based ride-sharing platform designed to connect riders with driver
 
 The following UML diagram outlines the core entities and their relationships within the application:
 
-![UML Diagram](./Uber_UML_Diagram_6bee8f589b.pdf)
+[📄 View UML Diagram (PDF)](./src/main/resources/static/Uber_UML_Diagram.pdf)
 
 ## 🛠️ Technologies Used
 
