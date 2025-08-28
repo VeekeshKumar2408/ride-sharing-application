@@ -12,6 +12,7 @@ import com.veekesh.project.uber.uberApp.services.AuthService;
 import com.veekesh.project.uber.uberApp.services.RiderService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.Set;
@@ -35,6 +36,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional
     public UserDto signup(SignupDto signupDTO) {
         userRepository.findByEmail(signupDTO.getEmail()).orElseThrow(()-> new RuntimeConflictException("Cannot signup. User already exists with email"));
         User mappedUser = modelMapper.map(signupDTO, User.class);

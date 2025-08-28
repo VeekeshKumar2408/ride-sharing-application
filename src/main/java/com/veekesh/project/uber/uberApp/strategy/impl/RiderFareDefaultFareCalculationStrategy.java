@@ -6,11 +6,11 @@ import com.veekesh.project.uber.uberApp.strategy.RideFareCalculationStrategy;
 import org.springframework.stereotype.Service;
 
 @Service
-public class RideFareDefaultFareCalculationStrategy implements RideFareCalculationStrategy {
+public class RiderFareDefaultFareCalculationStrategy implements RideFareCalculationStrategy {
 
     private final DistanceService distanceService;
 
-    public RideFareDefaultFareCalculationStrategy(DistanceService distanceService) {
+    public RiderFareDefaultFareCalculationStrategy(DistanceService distanceService) {
         this.distanceService = distanceService;
     }
 

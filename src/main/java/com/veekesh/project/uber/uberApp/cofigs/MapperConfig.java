@@ -23,7 +23,7 @@ public class MapperConfig {
         mapper.typeMap(Point.class, PointDto.class).setConverter(
                 context -> {
                     Point point = context.getSource();
-                    double coordinates[] = {
+                    double[] coordinates = {
                             point.getX(),
                             point.getY()
                     };

@@ -2,19 +2,19 @@ package com.veekesh.project.uber.uberApp.dto;
 
 public class PointDto {
 
-    private double[] coordinate;
+    private double[] coordinates;
     private String type = "Point";
 
-    public PointDto(double[] coordinate) {
-        this.coordinate = coordinate;
+    public PointDto(double[] coordinates) {
+        this.coordinates = coordinates;
     }
 
-    public double[] getCoordinate() {
-        return coordinate;
+    public double[] getCoordinates() {
+        return coordinates;
     }
 
-    public void setCoordinate(double[] coordinate) {
-        this.coordinate = coordinate;
+    public void setCoordinates(double[] coordinates) {
+        this.coordinates = coordinates;
     }
 
     public String getType() {

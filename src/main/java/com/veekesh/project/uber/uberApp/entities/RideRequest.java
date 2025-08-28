@@ -1,9 +1,11 @@
 package com.veekesh.project.uber.uberApp.entities;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.veekesh.project.uber.uberApp.enums.PaymentMethod;
 import com.veekesh.project.uber.uberApp.enums.RideRequestStatus;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Type;
 import org.locationtech.jts.geom.Point;
 
 import java.time.LocalDateTime;
@@ -15,16 +17,17 @@ public class RideRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(columnDefinition = "Geometry(Point, 4326)")
+    @Column(columnDefinition = "geometry(Point,4326)")
     private Point pickupLocation;
 
-    @Column(columnDefinition = "Geometry(Point, 4326)")
+    @Column(columnDefinition = "geometry(Point,4326)")
     private Point dropOffLocation;
 
     @CreationTimestamp
     private LocalDateTime requestedTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "rider_id")
     private Rider rider;
 
     @Enumerated(EnumType.STRING)
