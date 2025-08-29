@@ -1,17 +1,14 @@
 package com.veekesh.project.uber.uberApp.services.impl;
 
-import com.veekesh.project.uber.uberApp.dto.DriverDto;
-import com.veekesh.project.uber.uberApp.dto.RideDto;
-import com.veekesh.project.uber.uberApp.dto.RideRequestDto;
-import com.veekesh.project.uber.uberApp.dto.RiderDto;
-import com.veekesh.project.uber.uberApp.entities.Driver;
-import com.veekesh.project.uber.uberApp.entities.RideRequest;
-import com.veekesh.project.uber.uberApp.entities.Rider;
-import com.veekesh.project.uber.uberApp.entities.User;
+import com.veekesh.project.uber.uberApp.dto.*;
+import com.veekesh.project.uber.uberApp.entities.*;
 import com.veekesh.project.uber.uberApp.enums.RideRequestStatus;
+import com.veekesh.project.uber.uberApp.enums.RideStatus;
 import com.veekesh.project.uber.uberApp.exceptions.ResourceNotFoundException;
 import com.veekesh.project.uber.uberApp.repositories.RideRequestRepository;
 import com.veekesh.project.uber.uberApp.repositories.RiderRepository;
+import com.veekesh.project.uber.uberApp.services.DriverService;
+import com.veekesh.project.uber.uberApp.services.RideService;
 import com.veekesh.project.uber.uberApp.services.RiderService;
 import com.veekesh.project.uber.uberApp.strategy.RideStrategyManager;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +16,6 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.PrecisionModel;
-import org.locationtech.jts.io.WKTReader;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,12 +30,16 @@ public class RiderServiceImpl implements RiderService {
     private final RideStrategyManager rideStrategyManager;
     private final RideRequestRepository rideRequestRepository;
     private final RiderRepository riderRepository;
+    private final RideService rideService;
+    private final DriverService driverService;
 
-    public RiderServiceImpl(ModelMapper modelMapper , RideStrategyManager rideStrategyManager, RideRequestRepository rideRequestRepository, RiderRepository riderRepository) {
+    public RiderServiceImpl(ModelMapper modelMapper , RideStrategyManager rideStrategyManager, RideRequestRepository rideRequestRepository, RiderRepository riderRepository, RideService rideService, DriverService driverService) {
         this.modelMapper = modelMapper;
         this.rideStrategyManager = rideStrategyManager;
         this.rideRequestRepository = rideRequestRepository;
         this.riderRepository = riderRepository;
+        this.rideService = rideService;
+        this.driverService = driverService;
     }
 
     @Override
@@ -69,7 +69,20 @@ public class RiderServiceImpl implements RiderService {
 
     @Override
     public RideDto cancelRide(Long rideId) {
-        return null;
+        Rider rider = getCurrentRider();
+        Ride ride = rideService.getRideById(rideId);
+
+        if (rider.equals(ride.getRider())){
+            throw new RuntimeException("Rider does not own this ride with id: " + rideId);
+        }
+
+        if (!ride.getRideStatus().equals(RideStatus.CONFIRMED)){
+            throw new RuntimeException("Ride cannot be cancelled, invalid status: " + ride.getRideStatus());
+        }
+
+        Ride savedRide = rideService.updateRideStatus(ride, RideStatus.CANCELLED);
+        driverService.updateDriverAvailability(ride.getDriver(),true);
+        return modelMapper.map(savedRide, RideDto.class);
     }
 
     @Override

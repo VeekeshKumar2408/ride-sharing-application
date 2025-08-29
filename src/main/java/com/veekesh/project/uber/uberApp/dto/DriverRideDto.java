@@ -11,14 +11,13 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RideDto {
+public class DriverRideDto {
     private Long id;
     private PointDto pickupLocation;
     private PointDto dropOffLocation;
     private LocalDateTime createdTime;
     private RiderDto rider;
     private DriverDto driver;
-    private String otp;
     private PaymentMethod paymentMethod;
     private RideStatus rideStatus;
     private Double fare;

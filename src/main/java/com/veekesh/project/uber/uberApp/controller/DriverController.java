@@ -1,5 +1,6 @@
 package com.veekesh.project.uber.uberApp.controller;
 
+import com.veekesh.project.uber.uberApp.dto.DriverRideDto;
 import com.veekesh.project.uber.uberApp.dto.RideDto;
 import com.veekesh.project.uber.uberApp.dto.RideStartDto;
 import com.veekesh.project.uber.uberApp.services.DriverService;
@@ -17,12 +18,12 @@ public class DriverController {
     }
 
     @PostMapping("/acceptRide/{rideRequestId}")
-    public ResponseEntity<RideDto> acceptRide(@PathVariable Long rideRequestId){
+    public ResponseEntity<DriverRideDto> acceptRide(@PathVariable Long rideRequestId){
         return ResponseEntity.ok(driverService.acceptRide(rideRequestId));
     }
 
     @PostMapping("/startRide/{rideRequestId}")
-    public ResponseEntity<RideDto> startRide(@PathVariable Long rideRequestId,
+    public ResponseEntity<DriverRideDto> startRide(@PathVariable Long rideRequestId,
                                              @RequestBody RideStartDto rideStartDto){
         return ResponseEntity.ok(driverService.startRide(rideRequestId, rideStartDto.getOtp()));
     }
