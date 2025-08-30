@@ -2,6 +2,7 @@ package com.veekesh.project.uber.uberApp.services.impl;
 
 import com.veekesh.project.uber.uberApp.dto.DriverDto;
 import com.veekesh.project.uber.uberApp.dto.DriverRideDto;
+import com.veekesh.project.uber.uberApp.dto.RideDto;
 import com.veekesh.project.uber.uberApp.dto.RiderDto;
 import com.veekesh.project.uber.uberApp.entities.Driver;
 import com.veekesh.project.uber.uberApp.entities.Ride;
@@ -11,6 +12,7 @@ import com.veekesh.project.uber.uberApp.enums.RideStatus;
 import com.veekesh.project.uber.uberApp.exceptions.ResourceNotFoundException;
 import com.veekesh.project.uber.uberApp.repositories.DriverRepository;
 import com.veekesh.project.uber.uberApp.services.DriverService;
+import com.veekesh.project.uber.uberApp.services.PaymentService;
 import com.veekesh.project.uber.uberApp.services.RideRequestService;
 import com.veekesh.project.uber.uberApp.services.RideService;
 import org.modelmapper.ModelMapper;
@@ -28,17 +30,19 @@ public class DriverServiceImpl implements DriverService {
     private final DriverRepository driverRepository;
     private final RideService rideService;
     private final ModelMapper modelMapper;
+    private final PaymentService paymentService;
 
-    public DriverServiceImpl(RideRequestService rideRequestService, DriverRepository driverRepository, RideService rideService, ModelMapper modelMapper) {
+    public DriverServiceImpl(RideRequestService rideRequestService, DriverRepository driverRepository, RideService rideService, ModelMapper modelMapper, PaymentService paymentService) {
         this.rideRequestService = rideRequestService;
         this.driverRepository = driverRepository;
         this.rideService = rideService;
         this.modelMapper = modelMapper;
+        this.paymentService = paymentService;
     }
 
     @Override
     @Transactional
-    public DriverRideDto acceptRide(Long rideRequestId) {
+    public RideDto acceptRide(Long rideRequestId) {
         RideRequest rideRequest = rideRequestService.findRideRequestById(rideRequestId);
 
         if (!rideRequest.getRideRequestStatus().equals(RideRequestStatus.PENDING)){
@@ -53,7 +57,7 @@ public class DriverServiceImpl implements DriverService {
         Driver savedDriver = updateDriverAvailability(currentDriver, false);
         Ride ride = rideService.createNewRide(rideRequest,savedDriver);
 
-        return modelMapper.map(ride, DriverRideDto.class);
+        return modelMapper.map(ride, RideDto.class);
     }
 
     @Override
@@ -94,12 +98,28 @@ public class DriverServiceImpl implements DriverService {
 
         ride.setStartedAt(LocalDateTime.now());
         Ride savedRide = rideService.updateRideStatus(ride, RideStatus.ONGOING);
+        paymentService.createNewPayment(savedRide);
         return modelMapper.map(savedRide, DriverRideDto.class);
     }
 
     @Override
     public DriverRideDto endRide(Long rideId) {
-        return null;
+        Ride ride = rideService.getRideById(rideId);
+        Driver driver = getCurrentDriver();
+
+        if (!driver.equals(ride.getDriver())){
+            throw new RuntimeException("Driver cannot start a ride as he has not accepted it earlier.");
+        }
+
+        if (!ride.getRideStatus().equals(RideStatus.ONGOING)) {
+            throw new RuntimeException("Ride status is not ONGOING hence cannot be ended, status : " + ride.getRideStatus());
+        }
+
+        ride.setEndedAt(LocalDateTime.now());
+        rideService.updateRideStatus(ride, RideStatus.ENDED);
+        updateDriverAvailability(driver, true);
+        paymentService.processPayment(ride);
+        return modelMapper.map(ride, DriverRideDto.class);
     }
 
     @Override
@@ -116,7 +136,7 @@ public class DriverServiceImpl implements DriverService {
     @Override
     public Page<DriverRideDto> getAllMyRides(PageRequest pageRequest) {
         Driver currentDriver = getCurrentDriver();
-        return rideService.getAllRidesOfDriver(currentDriver.getId(), pageRequest)
+        return rideService.getAllRidesOfDriver(currentDriver, pageRequest)
                 .map(ride -> modelMapper.map(ride, DriverRideDto.class));
     }
 
