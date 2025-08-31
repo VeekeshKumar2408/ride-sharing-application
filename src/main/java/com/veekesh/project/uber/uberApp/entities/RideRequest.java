@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.veekesh.project.uber.uberApp.enums.PaymentMethod;
 import com.veekesh.project.uber.uberApp.enums.RideRequestStatus;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Type;
 import org.locationtech.jts.geom.Point;
@@ -11,6 +13,11 @@ import org.locationtech.jts.geom.Point;
 import java.time.LocalDateTime;
 
 @Entity
+@Getter
+@Setter
+@Table(indexes = {
+        @Index(name = "idx_ride_request_rider", columnList = "rider_id")
+})
 public class RideRequest {
 
     @Id

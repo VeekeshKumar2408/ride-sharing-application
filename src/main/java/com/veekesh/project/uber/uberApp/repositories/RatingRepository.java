@@ -1,0 +1,15 @@
+package com.veekesh.project.uber.uberApp.repositories;
+
+import com.veekesh.project.uber.uberApp.entities.Driver;
+import com.veekesh.project.uber.uberApp.entities.Rating;
+import com.veekesh.project.uber.uberApp.entities.Rider;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface RatingRepository extends JpaRepository<Rating, Long> {
+    List<Rating> findByRider(Rider rider);
+    List<Rating> findByDriver(Driver driver);
+}

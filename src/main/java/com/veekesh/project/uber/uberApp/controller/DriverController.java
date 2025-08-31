@@ -1,9 +1,10 @@
 package com.veekesh.project.uber.uberApp.controller;
 
-import com.veekesh.project.uber.uberApp.dto.DriverRideDto;
-import com.veekesh.project.uber.uberApp.dto.RideDto;
-import com.veekesh.project.uber.uberApp.dto.RideStartDto;
+import com.veekesh.project.uber.uberApp.dto.*;
 import com.veekesh.project.uber.uberApp.services.DriverService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,5 +32,27 @@ public class DriverController {
     @PostMapping("/endRide/{rideId}")
     public ResponseEntity<DriverRideDto> endRide(@PathVariable Long rideId){
         return ResponseEntity.ok(driverService.endRide(rideId));
+    }
+
+    @PostMapping("/cancelRide/{rideId}")
+    public ResponseEntity<?> cancelRide(@PathVariable Long rideId){
+        return ResponseEntity.ok(driverService.cancelRide(rideId));
+    }
+
+    @PostMapping("/rateDriver")
+    public ResponseEntity<RiderDto> rateRider(@RequestBody RatingDto ratingDto){
+        return ResponseEntity.ok(driverService.rateRider(ratingDto.getRideId(), ratingDto.getRating()));
+    }
+
+    @GetMapping("/getMyProfile")
+    public ResponseEntity<DriverDto> getMyProfile(){
+        return ResponseEntity.ok(driverService.getMyProfile());
+    }
+
+    @GetMapping("/getMyRides")
+    public ResponseEntity<Page<DriverRideDto>> getAllMyRides(@RequestParam(defaultValue = "0") Integer pageOffSet,
+                                                       @RequestParam(defaultValue = "10", required = false) Integer pageSize){
+        PageRequest pageRequest = PageRequest.of(pageOffSet, pageSize, Sort.by(Sort.Direction.DESC, "createdTime","id"));
+        return ResponseEntity.ok(driverService.getAllMyRides(pageRequest));
     }
 }
