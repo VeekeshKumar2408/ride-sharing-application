@@ -11,10 +11,7 @@ import com.veekesh.project.uber.uberApp.enums.RideRequestStatus;
 import com.veekesh.project.uber.uberApp.enums.RideStatus;
 import com.veekesh.project.uber.uberApp.exceptions.ResourceNotFoundException;
 import com.veekesh.project.uber.uberApp.repositories.DriverRepository;
-import com.veekesh.project.uber.uberApp.services.DriverService;
-import com.veekesh.project.uber.uberApp.services.PaymentService;
-import com.veekesh.project.uber.uberApp.services.RideRequestService;
-import com.veekesh.project.uber.uberApp.services.RideService;
+import com.veekesh.project.uber.uberApp.services.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -31,13 +28,15 @@ public class DriverServiceImpl implements DriverService {
     private final RideService rideService;
     private final ModelMapper modelMapper;
     private final PaymentService paymentService;
+    private final RatingService ratingService;
 
-    public DriverServiceImpl(RideRequestService rideRequestService, DriverRepository driverRepository, RideService rideService, ModelMapper modelMapper, PaymentService paymentService) {
+    public DriverServiceImpl(RideRequestService rideRequestService, DriverRepository driverRepository, RideService rideService, ModelMapper modelMapper, PaymentService paymentService, RatingService ratingService) {
         this.rideRequestService = rideRequestService;
         this.driverRepository = driverRepository;
         this.rideService = rideService;
         this.modelMapper = modelMapper;
         this.paymentService = paymentService;
+        this.ratingService = ratingService;
     }
 
     @Override
@@ -99,6 +98,7 @@ public class DriverServiceImpl implements DriverService {
         ride.setStartedAt(LocalDateTime.now());
         Ride savedRide = rideService.updateRideStatus(ride, RideStatus.ONGOING);
         paymentService.createNewPayment(savedRide);
+        ratingService.createNewRating(savedRide);
         return modelMapper.map(savedRide, DriverRideDto.class);
     }
 
@@ -134,7 +134,8 @@ public class DriverServiceImpl implements DriverService {
         if (!ride.getRideStatus().equals(RideStatus.ENDED)) {
             throw new RuntimeException("Ride status is not ENDED hence cannot start rating : " + ride.getRideStatus());
         }
-        return null;
+
+        return ratingService.rateRider(ride,rating);
     }
 
     @Override
