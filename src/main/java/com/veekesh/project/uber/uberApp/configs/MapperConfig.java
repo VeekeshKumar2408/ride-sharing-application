@@ -1,4 +1,4 @@
-package com.veekesh.project.uber.uberApp.cofigs;
+package com.veekesh.project.uber.uberApp.configs;
 
 import com.veekesh.project.uber.uberApp.dto.PointDto;
 import com.veekesh.project.uber.uberApp.utils.GeometryUtil;

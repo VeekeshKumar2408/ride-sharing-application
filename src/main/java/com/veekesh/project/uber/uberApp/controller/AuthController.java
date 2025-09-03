@@ -1,9 +1,6 @@
 package com.veekesh.project.uber.uberApp.controller;
 
-import com.veekesh.project.uber.uberApp.dto.DriverDto;
-import com.veekesh.project.uber.uberApp.dto.OnboardDriverDto;
-import com.veekesh.project.uber.uberApp.dto.SignupDto;
-import com.veekesh.project.uber.uberApp.dto.UserDto;
+import com.veekesh.project.uber.uberApp.dto.*;
 import com.veekesh.project.uber.uberApp.services.AuthService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,5 +24,11 @@ public class AuthController {
     @PostMapping("/onBoardNewDriver/{userId}")
     ResponseEntity<DriverDto> onBoardNewDriver(@PathVariable Long userId, @RequestBody OnboardDriverDto onboardDriverDto){
         return new ResponseEntity<>(authService.onboardNewDriver(userId, onboardDriverDto.getVehicleId()), HttpStatus.CREATED);
+    }
+
+    @PostMapping("/login")
+    ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto loginRequestDto){
+        String[] token = authService.login(loginRequestDto.getEmail(), loginRequestDto.getPassword());
+        return ResponseEntity.ok(new LoginResponseDto(token[0]));
     }
 }

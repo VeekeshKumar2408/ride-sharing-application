@@ -1,4 +1,4 @@
-package com.veekesh.project.uber.uberApp.cofigs;
+package com.veekesh.project.uber.uberApp.configs;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
