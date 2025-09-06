@@ -49,7 +49,7 @@ INSERT INTO user_roles (user_id, roles) VALUES
 (20, 'DRIVER'),
 (20, 'RIDER');
 
-INSERT INTO rider (id, user_id, rating) VALUES
+INSERT INTO rider (user_id, rating) VALUES
 (1, 1, 4.9);
 
 INSERT INTO driver (id, user_id, rating, available, vehicle_id, current_location) VALUES

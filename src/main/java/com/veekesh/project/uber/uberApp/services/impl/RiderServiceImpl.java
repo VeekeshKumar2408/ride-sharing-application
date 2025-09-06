@@ -20,6 +20,7 @@ import org.locationtech.jts.geom.PrecisionModel;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -61,12 +62,12 @@ public class RiderServiceImpl implements RiderService {
         rideRequest.setDropOffLocation(dropOffPoint);
 
         Double fare =rideStrategyManager.rideFareCalculationStrategy().calculateFare(rideRequest);
-        rideRequest.setFare(fare);
+
+        rideRequest.setFare(Math.ceil(fare));
         rideRequest.setRider(rider);
 
         RideRequest savedRideRequest = rideRequestRepository.save(rideRequest);
         List<Driver> drivers = rideStrategyManager.driverMatchingStrategy(rider.getRating()).findMatchingDrivers(rideRequest);
-
 //        TODO : Send notification to all the drivers about this request
 
         return modelMapper.map(savedRideRequest, RideRequestDto.class);
@@ -121,14 +122,15 @@ public class RiderServiceImpl implements RiderService {
 
     @Override
     public Rider createNewRider(User user) {
-        Rider rider = new Rider(user,0.0);
+        Rider rider = new Rider(user, 0.0);
         return riderRepository.save(rider);
     }
 
     @Override
     public Rider getCurrentRider() {
- //    TODO: implement Spring security
-        return riderRepository.findById(1L).orElseThrow(()-> new ResourceNotFoundException("Rider not found with id: " + 1));
+        User user1 = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return riderRepository.findByUser(user1)
+                .orElseThrow(()-> new ResourceNotFoundException("Rider not associated with user with id: " + 1));
     }
 
     public static Point createPointFromCoordinates(double[] coordinates) {

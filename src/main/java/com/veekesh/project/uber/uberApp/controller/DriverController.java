@@ -5,11 +5,14 @@ import com.veekesh.project.uber.uberApp.services.DriverService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/drivers")
+@Secured("ROLE_DRIVER")
 public class DriverController {
 
     private final DriverService driverService;
@@ -54,5 +57,11 @@ public class DriverController {
                                                        @RequestParam(defaultValue = "10", required = false) Integer pageSize){
         PageRequest pageRequest = PageRequest.of(pageOffSet, pageSize, Sort.by(Sort.Direction.DESC, "createdTime","id"));
         return ResponseEntity.ok(driverService.getAllMyRides(pageRequest));
+    }
+
+    @PostMapping("/startJob")
+    public ResponseEntity<?> startJob(@RequestBody PointDto currentLocation){
+        driverService.startJobOfDriver(currentLocation);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

@@ -9,15 +9,20 @@ import com.veekesh.project.uber.uberApp.enums.Role;
 import com.veekesh.project.uber.uberApp.exceptions.ResourceNotFoundException;
 import com.veekesh.project.uber.uberApp.exceptions.RuntimeConflictException;
 import com.veekesh.project.uber.uberApp.repositories.UserRepository;
+import com.veekesh.project.uber.uberApp.security.JWTService;
 import com.veekesh.project.uber.uberApp.services.AuthService;
 import com.veekesh.project.uber.uberApp.services.DriverService;
 import com.veekesh.project.uber.uberApp.services.RiderService;
 import com.veekesh.project.uber.uberApp.services.WalletService;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.Set;
 
@@ -30,20 +35,30 @@ public class AuthServiceImpl implements AuthService {
     private final WalletService walletService;
     private final DriverService driverService;
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final JWTService jwtService;
 
-    public AuthServiceImpl(ModelMapper modelMapper, UserRepository userRepository, RiderService riderService, WalletService walletService, DriverService driverService, PasswordEncoder passwordEncoder) {
+    public AuthServiceImpl(ModelMapper modelMapper, UserRepository userRepository, RiderService riderService, WalletService walletService, DriverService driverService, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JWTService jwtService) {
         this.modelMapper = modelMapper;
         this.userRepository = userRepository;
         this.riderService = riderService;
         this.walletService = walletService;
         this.driverService = driverService;
         this.passwordEncoder = passwordEncoder;
+        this.authenticationManager = authenticationManager;
+        this.jwtService = jwtService;
     }
 
     @Override
     public String[] login(String email, String password) {
-        String[] tokens = new String[2];
-        return null;
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(email, password)
+        );
+
+        User user = (User) authentication.getPrincipal();
+        String accessToken = jwtService.generateAccessToken(user);
+        String refreshToken = jwtService.generateRefreshToken(user);
+        return new String[] {accessToken, refreshToken};
     }
 
     @Override

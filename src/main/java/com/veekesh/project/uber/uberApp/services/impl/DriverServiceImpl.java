@@ -1,20 +1,21 @@
 package com.veekesh.project.uber.uberApp.services.impl;
 
-import com.veekesh.project.uber.uberApp.dto.DriverDto;
-import com.veekesh.project.uber.uberApp.dto.DriverRideDto;
-import com.veekesh.project.uber.uberApp.dto.RideDto;
-import com.veekesh.project.uber.uberApp.dto.RiderDto;
+import com.veekesh.project.uber.uberApp.dto.*;
 import com.veekesh.project.uber.uberApp.entities.Driver;
 import com.veekesh.project.uber.uberApp.entities.Ride;
 import com.veekesh.project.uber.uberApp.entities.RideRequest;
+import com.veekesh.project.uber.uberApp.entities.User;
 import com.veekesh.project.uber.uberApp.enums.RideRequestStatus;
 import com.veekesh.project.uber.uberApp.enums.RideStatus;
 import com.veekesh.project.uber.uberApp.exceptions.ResourceNotFoundException;
 import com.veekesh.project.uber.uberApp.repositories.DriverRepository;
 import com.veekesh.project.uber.uberApp.services.*;
+import com.veekesh.project.uber.uberApp.utils.GeometryUtil;
+import org.locationtech.jts.geom.Point;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -153,7 +154,8 @@ public class DriverServiceImpl implements DriverService {
 
     @Override
     public Driver getCurrentDriver() {
-        return driverRepository.findById(2L).orElseThrow(()-> new ResourceNotFoundException("Driver not found with id " + 2));
+        User user =(User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return driverRepository.findByUser(user).orElseThrow(()-> new ResourceNotFoundException("Driver not associated with user id " + user.getId()));
     }
 
     @Override
@@ -165,5 +167,14 @@ public class DriverServiceImpl implements DriverService {
     @Override
     public Driver createNewDriver(Driver driver) {
         return driverRepository.save(driver);
+    }
+
+    @Override
+    public void startJobOfDriver(PointDto pointDto) {
+        Driver driver = getCurrentDriver();
+        driver.setAvailable(true);
+
+        driver.setCurrentLocation(GeometryUtil.createPoint(pointDto));
+        driverRepository.save(driver);
     }
 }
