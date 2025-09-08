@@ -81,7 +81,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(new ApiResponse<>(apiError), HttpStatus.FORBIDDEN);
     }
 
-    @ExceptionHandler(AccessDeniedException.class)
+    @ExceptionHandler(JwtException.class)
     public ResponseEntity<ApiResponse<?>> handleJwtException(JwtException exception){
         ApiError apiError = ApiError.builder()
                 .status(HttpStatus.UNAUTHORIZED)
